@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seal Online Class Power Dashboard – by ยุงลาย</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #020617;
+      --panel-soft: #020617;
+      --border: #1f2937;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --accent: #38bdf8;
+      --good: #22c55e;
+      --mid: #eab308;
+      --bad: #f97316;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
+      color: var(--text-main);
+      padding: 24px;
+    }
+
+    .page { max-width: 1320px; margin: 0 auto; }
+
+    header { margin-bottom: 20px; }
+
+    header h1 {
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    header h2 {
+      font-size: 13px;
+      margin-top: 6px;
+      color: var(--text-soft);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    header .meta {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 14px 14px 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .rank-pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #1e293b;
+      color: var(--text-soft);
+    }
+
+    .job-head {
+      text-align: right;
+    }
+
+    .job-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .tier-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tier-s { background: #14532d; color: #bbf7d0; }
+    .tier-a { background: #1e3a8a; color: #bfdbfe; }
+    .tier-b { background: #3f3f46; color: #e4e4e7; }
+    .tier-c { background: #7f1d1d; color: #fecaca; }
+
+    .metrics {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 48% 52%;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .metric-bar {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: var(--panel-soft);
+      overflow: hidden;
+      border: 1px solid #111827;
+    }
+
+    .metric-fill {
+      position: absolute;
+      inset: 0;
+      width: calc(var(--value) * 10%);
+      background: linear-gradient(90deg, var(--bad), var(--mid), var(--good));
+      z-index: 1;
+    }
+
+    .metric-scale {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      font-size: 7px;
+      color: rgba(148, 163, 184, 0.65);
+      align-items: flex-end;
+      padding-bottom: 1px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .metric-scale span {
+      text-align: center;
+    }
+
+    .metric-value {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9px;
+      color: #020617;
+      font-weight: 600;
+      z-index: 3;
+    }
+
+    .dmg-note {
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 3px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      color: #cbd5e1;
+    }
+
+    .desc {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
+    .skill-title {
+      margin-top: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #cbd5e1;
+    }
+
+    .skill-list {
+      margin-top: 2px;
+      margin-left: 12px;
+      font-size: 10px;
+      color: var(--text-soft);
+      line-height: 1.35;
+    }
+
+    .skill-list li { margin-bottom: 1px; }
+
+    footer {
+      margin-top: 24px;
+      font-size: 10px;
+      color: var(--text-soft);
+      text-align: right;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Seal Online – Class Power Dashboard</h1>
+    <h2>PVP 1-1 • Party • สนับสนุน (อ้างอิง DMG% Max Lv. จาก seal-fortune)</h2>
+    <div class="meta">
+      • วิเคราะห์จากข้อมูลสกิล Max Lv. (Damage%, Cooldown, Range) ทั้งคลาส 1 / คลาส 2 ของแต่ละอาชีพ<br>
+      • ตัวเลขบนแถบพลังคือสเกล <strong>|1|-|10|</strong> (1 = แย่สุด, 10 = สูงสุด) ใช้เทียบ “ระดับ” ระหว่างอาชีพ<br>
+      • มุมมองเน้น PVP 1-1 เป็นหลัก แล้วดูเสริม Party/Boss + ความสามารถซัพพอร์ต
+    </div>
+  </header>
+
+  <section class="grid">
+    <!-- 1. Sword Master -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 1</span>
+        <div class="job-head">
+          <div class="job-name">Sword Master</div>
+          <span class="tier-tag tier-s">S Tier</span>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:9;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">9</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:9;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">9</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:4;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">4</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        สกิลหลัก Blade Waltz / Sword Dance / Charge มี Damage รวมช่วง ~6,000–7,000% ที่ Max Lv.
+        เปิดได้จากระยะกลาง-ไกลแล้วต่อคอมโบปิดไฟต์ตัวบางได้ในชุดเดียว
+      </div>
+      <div class="badge-row">
+        <span class="badge">คอมโบหนัก</span>
+        <span class="badge">Sword Dance multi-hit เร็ว</span>
+        <span class="badge">เปิดไฟต์จากระยะกลาง</span>
+      </div>
+      <p class="desc">
+        Sword Master ใช้คอมโบ multi-hit ที่ Damage% สูงมาก + Mobility พุ่งเข้าออกไว
+        ถ้าเริ่มก่อนและคุมระยะได้ มีโอกาสลบเป้าหมาย 150k HP ใน 1 ชุดสกิล ชดเชยข้อเสียที่เป็นตัวประชิดได้ดี
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Blade Waltz</strong> – ~7,000% DMG, CD ~7 วิ ใช้เป็นฟินิชคอมโบ</li>
+        <li><strong>Sword Dance</strong> – ~6,500% DMG, multi-hit ระยะ 4 ม. PVP ละลายตัวบาง</li>
+        <li><strong>Charge</strong> – ~6,000% DMG, พุ่ง 9 ม. ใช้เปิดไฟต์/ไล่ปิดจบ</li>
+      </ul>
+    </article>
+
+    <!-- 2. Archer -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 2</span>
+        <div class="job-head">
+          <div class="job-name">Archer</div>
+          <span class="tier-tag tier-s">S Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:9;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">9</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        Magic Arrow มี Damage สูงสุดในข้อมูล (~10,000%) แม้จะเป็นสกิลเฉพาะทาง
+        ส่วน Arrow Squall / Triple Arrow ชุดยิงหลักอยู่ช่วง ~4,000–4,500% CD ราว 6 วิ ระยะยิง ~8 ม.
+      </div>
+      <div class="badge-row">
+        <span class="badge">ระยะไกลมาก</span>
+        <span class="badge">คุมระยะ + Kite</span>
+        <span class="badge">แก้ทาง melee</span>
+      </div>
+      <p class="desc">
+        Archer ชนะตรง “เล่นง่าย ปลอดภัย” – ดาเมจต่อเนื่องดีจากสกิลยิงชุด
+        บังคับให้สายประชิดต้องวิ่งเข้ามาใต้ไฟ แล้วโดนเบรกด้วยสกิลหยุด/ถอย
+        ในปาร์ตี้ดันบอสเป็น DPS ระยะไกลที่ทีมส่วนใหญ่ต้องการ
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Magic Arrow</strong> – ~10,000% DMG, จังหวะเปิด/ปิดจากระยะไกล</li>
+        <li><strong>Arrow Squall</strong> – ~4,500% DMG, CD ~6 วิ, ยิงหมู่ระยะ 8 ม.</li>
+        <li><strong>Triple Arrow</strong> – ~4,000% DMG, เสริมคอมโบยิงเดี่ยวแรง ๆ</li>
+      </ul>
+    </article>
+
+    <!-- 3. Assassin -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 3</span>
+        <div class="job-head">
+          <div class="job-name">Assassin</div>
+          <span class="tier-tag tier-s">S Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:9;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">9</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:2;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">2</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ชุด Sudden Attack / Vital Attack / Vital Assault ทำ Damage ~6,000–7,000% ต่อชุด
+        ถ้าเริ่มจากหายตัวแล้วล็อกถูกจังหวะ ตัวกลาง–บางจะละลายได้ในการเปิดเดียว
+      </div>
+      <div class="badge-row">
+        <span class="badge">หายตัวเข้าหลัง</span>
+        <span class="badge">สกิลห้ามฮีล/ตัด sustain</span>
+        <span class="badge">Burst สูงมาก</span>
+      </div>
+      <p class="desc">
+        Assassin เป็นสาย “เริ่มก่อนชนะก่อน” – ใช้สกิลหายตัว + burst combo ที่ DMG% สูงมาก
+        แต่เพราะต้องเข้าใกล้และบาง หากเปิดพลาดหรือโดน reveal กลับมีโอกาสตายไวเหมือนกัน
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Sudden Attack</strong> – ~7,000% DMG, ใช้เปิดจากหายตัว</li>
+        <li><strong>Vital Attack</strong> – ~6,500% DMG, ต่อคอมโบเพื่อจบเป้าหมาย</li>
+        <li><strong>Vital Assault</strong> – ~6,000% DMG, CD สั้น ช่วยวน burst ถี่</li>
+      </ul>
+    </article>
+
+    <!-- 4. Gunner -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 4</span>
+        <div class="job-head">
+          <div class="job-name">Gunner</div>
+          <span class="tier-tag tier-a">A Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:2;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">2</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        Encounter Shot / Precision Shot / Headshot มี Damage ช่วง ~5,000–5,700% CD ราว 10–11 วิ
+        เน้น burst ไกล เปิดก่อนแล้วถอยคุมระยะ
+      </div>
+      <div class="badge-row">
+        <span class="badge">Burst ระยะไกล</span>
+        <span class="badge">CC ไกล</span>
+      </div>
+      <p class="desc">
+        Gunner เป็น Archer เวอร์ชัน burst หนักขึ้นแต่จังหวะสั้นกว่า
+        ถ้ากดถูกจังหวะแล้วโดนเต็ม ๆ เป้าหมายจะหายเป็นก้อน แต่ถ้าพลาดคอมโบจะวูบค่อนข้างนาน
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Encounter Shot</strong> – ~5,700% DMG, ระยะ ~7 ม., เปิดก่อนแล้ว kite</li>
+        <li><strong>Precision Shot</strong> – ~5,700% DMG, ยิงเดี่ยวเน้นตรงตัว</li>
+        <li><strong>Headshot</strong> – ~5,000% DMG, ใช้เก็บเป้าหมายเลือดน้อย</li>
+      </ul>
+    </article>
+
+    <!-- 5. Fire Wizard -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 5</span>
+        <div class="job-head">
+          <div class="job-name">Fire Wizard</div>
+          <span class="tier-tag tier-a">A Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        สกิลอย่าง Giga Flame / Inferno / Earthquake อยู่ช่วง ~5,500% DMG ที่ Max Lv.
+        เน้นวงกว้างและต่อเนื่อง เหมาะลากมอนและ mass PVP มาก
+      </div>
+      <div class="badge-row">
+        <span class="badge">Burst เวทย์แรง</span>
+        <span class="badge">วงกว้าง</span>
+        <span class="badge">กดดันพื้นที่</span>
+      </div>
+      <p class="desc">
+        Fire Wizard เล่น 1-1 ต้องวัดจังหวะ cast time ที่ค่อนข้างนาน แต่ถ้าคุม safe zone ได้
+        ดาเมจที่คูณสูงมากจะทำให้อีกฝั่งละลายไว โดยเฉพาะตัวบางที่ไม่มี gap-close ดี ๆ
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Giga Flame</strong> – ~5,500% DMG, AoE ไฟเน้นลากมอน/ยืนไฟ</li>
+        <li><strong>Inferno</strong> – ~5,500% DMG, CD สั้นกว่า เหมาะวนสลับกับ Giga Flame</li>
+        <li><strong>Earthquake</strong> – ~5,500% DMG, AoE กว้าง สั่นทั้งจอ</li>
+      </ul>
+    </article>
+
+    <!-- 6. Templar -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 6</span>
+        <div class="job-head">
+          <div class="job-name">Templar</div>
+          <span class="tier-tag tier-a">A Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:8;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">8</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        Judgement / Repentance อยู่ช่วง ~4,000–5,000% DMG เสริมด้วยดีบัฟลดเกราะ/บัฟทีม
+        ทำให้ภาพรวมดาเมจปาร์ตี้สูงขึ้นมาก
+      </div>
+      <div class="badge-row">
+        <span class="badge">ลดเกราะแรง</span>
+        <span class="badge">มีบัฟ/ฮีลเสริม</span>
+      </div>
+      <p class="desc">
+        Templar คือ Cleric สายโจมตีที่ยังรักษาบทบาท support ได้ดี
+        ถ้าเล่นในปาร์ตี้จะเด่นมากเพราะทำให้ DPS ฝั่งเรารุนแรงขึ้นเยอะ
+        1-1 จะไม่สุดเท่าอาชีพ pure DPS แต่ก็ไม่ได้แพ้ง่าย
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Judgement</strong> – ~5,000% DMG, ระยะกลาง ใช้ poke ศัตรู</li>
+        <li><strong>Repentance</strong> – ~4,000% DMG, CD สั้น ใช้กวนจังหวะไฟต์</li>
+        <li><strong>สกิลบัฟ/ฮีล</strong> – เพิ่ม survivability ให้ปาร์ตี้ชัดเจน</li>
+      </ul>
+    </article>
+
+    <!-- 7. Gambler -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 7</span>
+        <div class="job-head">
+          <div class="job-name">Gambler</div>
+          <span class="tier-tag tier-b">B Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:2;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">2</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        Sleight of Hand ~5,000% DMG แบบเกือบ instant ไม่มี CD ชัดเจน
+        ร่วมกับ Black Jack / All In (~3,000–4,500%) ทำให้เพดาน burst สูงมากถ้าดวงดี
+      </div>
+      <div class="badge-row">
+        <span class="badge">RNG พลิกไฟต์</span>
+        <span class="badge">ดีบัฟแปลก</span>
+      </div>
+      <p class="desc">
+        Gambler เพดานดาเมจสูงมากแต่ไม่เสถียร แพทเทิร์นการเล่นต้องอ่านจังหวะ RNG ให้เป็น
+        ถ้าดวงดีสามารถล้มสายถึกได้ แต่ถ้าดวงกาว ๆ ดาเมจจะดรอปลงเห็นได้ชัด
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Sleight of Hand</strong> – ~5,000% DMG, instant, spam ได้</li>
+        <li><strong>Black Jack / All In</strong> – ~3,000–4,500% DMG, มีโอกาสดาเมจดีมาก</li>
+        <li><strong>Slot Machine / Flush</strong> – สกิล RNG ที่ให้ผลสุดโต่งทั้งดีและแย่</li>
+      </ul>
+    </article>
+
+    <!-- 8. Renegade -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 8</span>
+        <div class="job-head">
+          <div class="job-name">Renegade</div>
+          <span class="tier-tag tier-b">B Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        Break Weapon / Break Armor Damage ~6,500% พร้อมดีบัฟโจมตี/เกราะแรงมาก
+        เสริมด้วยสกิล dark line อื่น ๆ ที่ช่วยยื้อไฟต์
+      </div>
+      <div class="badge-row">
+        <span class="badge">ลด ATK/DEF หนัก</span>
+        <span class="badge">เก่งไฟต์ยื้อ</span>
+      </div>
+      <p class="desc">
+        Renegade ไม่ใช่ DPS สูงสุด แต่ทำให้ฝ่ายศัตรูตีเบาและบางลงมาก
+        เหมาะในการยืนไฟต์ยาว ๆ และช่วยเพื่อนดันดาเมจรวมของทีม
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Break Weapon / Break Armor</strong> – ~6,500% DMG + ดีบัฟ stat หนัก</li>
+        <li><strong>Dark line</strong> – สกิลสาย dark เพิ่มดาเมจและลดความทนของศัตรู</li>
+        <li><strong>Explosive Treatment</strong> – ~7,000% DMG ใช้ปิดคอมโบ</li>
+      </ul>
+    </article>
+
+    <!-- 9. Ice Wizard -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 9</span>
+        <div class="job-head">
+          <div class="job-name">Ice Wizard</div>
+          <span class="tier-tag tier-b">B Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:5;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">5</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:9;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">9</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:4;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">4</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        Ice Spear / Blizzard / Ice Storm อยู่ช่วง ~4,500–5,000% DMG แต่เด่นที่สโลว์/แช่แข็งหมู่
+        ทำให้ทีมเราตีฟรีได้หลายวินาที
+      </div>
+      <div class="badge-row">
+        <span class="badge">สโลว์/แช่แข็งหมู่</span>
+        <span class="badge">เก่ง Mass PVP</span>
+      </div>
+      <p class="desc">
+        Ice Wizard เด่นเรื่องการควบคุมฝูงศัตรู – ทำให้เดินช้า/ยืนติดที่
+        ทำให้ทีมเราทำดาเมจฟรี ใน 1-1 ดาเมจอาจไม่สุดแต่เล่นยื้อจังหวะได้ดีมาก
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Ice Spear</strong> – ~4,500% DMG, สโลว์เดี่ยวแรง</li>
+        <li><strong>Blizzard</strong> – ~5,000% DMG, AoE แช่แข็งหมู่</li>
+        <li><strong>Ice Storm</strong> – คุมโซนบังคับเส้นทางเดินศัตรู</li>
+      </ul>
+    </article>
+
+    <!-- 10. Berserker -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 10</span>
+        <div class="job-head">
+          <div class="job-name">Berserker</div>
+          <span class="tier-tag tier-b">B Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:5;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">5</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:1;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">1</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ทฤษฎีคอมโบยาวมี Damage รวมระดับ ~13,000–16,000% แต่ใน PVP จริงมักโดนขัดก่อนครบ
+        ทำให้ดาเมจใช้งานจริงอยู่ประมาณกลาง ๆ
+      </div>
+      <div class="badge-row">
+        <span class="badge">สายคอมโบหนัก</span>
+        <span class="badge">ลดเกราะแรง (Dominate)</span>
+        <span class="badge">แพ้ CC ง่าย</span>
+      </div>
+      <p class="desc">
+        Berserker ตั้งใจให้เป็นสาย DPS หนักสุด แต่เพราะต้องยืนเทินนานและขาดเครื่องมือกัน CC
+        ทำให้ใน PVP 1-1 มักโดนหยุดก่อนดาเมจจะขึ้นเพดานเต็ม
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Dominate</strong> – ดาเมจสูง + ลดเกราะศัตรูอย่างแรง</li>
+        <li><strong>Awakening</strong> – สตั้นเดี่ยว ~2–3 วิ ใช้เปิดคอมโบ</li>
+        <li><strong>คอมโบ hit ต่อเนื่อง</strong> – ถ้าไม่โดนขัด ดาเมจรวมสูงมาก</li>
+      </ul>
+    </article>
+
+    <!-- 11. Chef -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 11</span>
+        <div class="job-head">
+          <div class="job-name">Chef</div>
+          <span class="tier-tag tier-b">B Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:5;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">5</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:7;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">7</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ดาเมจสกิลโจมตีเดี่ยวอยู่ช่วงกลาง ๆ เมื่อเทียบกับสาย DPS แท้
+        แต่มีฮีลและบัฟอาหารที่ช่วยให้ทีมยืนไฟต์ยาวขึ้นมาก
+      </div>
+      <div class="badge-row">
+        <span class="badge">ฮีลแรง</span>
+        <span class="badge">บัฟอาหาร</span>
+      </div>
+      <p class="desc">
+        Chef เป็นตัว support-offense ที่ทำได้ทั้งฮีลและตี
+        ในปาร์ตี้/ดันบอสมีประโยชน์มาก แต่ใน 1-1 ถ้าเจอสาย burst แรง ๆ จะต้องเล่นอ่านจังหวะหนัก
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>สกิลฮีลเดี่ยว/หมู่</strong> – เติม HP ได้เยอะเมื่ออัปเต็ม</li>
+        <li><strong>บัฟอาหาร</strong> – เพิ่ม stat/ความทนทานให้ทีม</li>
+        <li><strong>สกิลตีหมู่</strong> – ดาเมจพอใช้ เติมความเสียหายรวมของทีม</li>
+      </ul>
+    </article>
+
+    <!-- 12. Demolisionist -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 12</span>
+        <div class="job-head">
+          <div class="job-name">Demolisionist</div>
+          <span class="tier-tag tier-c">C Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:5;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">5</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:4;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">4</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ดาเมจ 1 ชุดระเบิดไม่สูงเท่าสาย DPS แท้ แต่ถ้าศัตรูเหยียบกับดักครบจะเจ็บมาก
+        จุดอ่อนคือใน 1-1 พื้นที่โล่งทำให้ดักทางได้ยาก
+      </div>
+      <div class="badge-row">
+        <span class="badge">กับดัก/ระเบิด</span>
+        <span class="badge">คุม choke point</span>
+      </div>
+      <p class="desc">
+        Demolisionist เน้นเกมกับดัก – ถ้าคู่ต่อสู้หลงเดินเข้าโซนระเบิดจะเจ็บหนัก แต่ใน 1-1 พื้นที่โล่ง ๆ
+        ทำให้เล่นยากและโดนเข้าถึงตัวได้ง่าย
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>Time Bomb / Trap</strong> – สร้างพื้นที่อันตรายรอบ ๆ จุด</li>
+        <li><strong>สกิลลดเกราะ/ดีบัฟ</strong> – เสริมให้เพื่อนตีแรงขึ้น</li>
+        <li><strong>สกิลระเบิดหมู่</strong> – ถ้าจับจังหวะได้ถูก จะทำดาเมจหนักมาก</li>
+      </ul>
+    </article>
+
+    <!-- 13. Food Fighter -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 13</span>
+        <div class="job-head">
+          <div class="job-name">Food Fighter</div>
+          <span class="tier-tag tier-c">C Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:5;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">5</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:4;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">4</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:5;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">5</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ดาเมจ 1 ชุดอยู่ระดับกลาง แต่จุดเด่นคือความถึกและสกิลสะท้อนดาเมจ
+        เหมาะสำหรับไฟต์ยื้อที่อีกฝ่ายไม่รู้จังหวะเข้า
+      </div>
+      <div class="badge-row">
+        <span class="badge">แทงค์/สะท้อน</span>
+        <span class="badge">ยื้อไฟต์</span>
+      </div>
+      <p class="desc">
+        Food Fighter เหมาะกับสาย “ไม่ตายง่าย” – เน้นถึกและสะท้อนดาเมจกลับ
+        แต่ขาดดาเมจปิดไฟต์ในตัวเอง ถ้าศัตรูอ่านจังหวะได้จะเลือกไม่ยิงใส่ตรง ๆ
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>สกิลสะท้อน</strong> – คืนดาเมจบางส่วนให้ผู้ตี</li>
+        <li><strong>บัฟถึก</strong> – เพิ่ม DEF / HP ให้ยืนดาเมจได้ดี</li>
+        <li><strong>สกิลบังคับให้ตีตัวเอง/ตีกลับ</strong> – ทำให้ดาเมจศัตรูย้อนกลับไปเอง</li>
+      </ul>
+    </article>
+
+    <!-- 14. Apostle -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 14</span>
+        <div class="job-head">
+          <div class="job-name">Apostle</div>
+          <span class="tier-tag tier-c">C Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:6;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">6</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:9;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">9</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:10;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">10</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ดาเมจตรง ๆ ไม่สูงมากเมื่อเทียบกับ DPS แท้ แต่มีสกิลฮีล/บัฟที่ทำให้ทีมรอดจาก burst และ CC ได้ดีมาก
+      </div>
+      <div class="badge-row">
+        <span class="badge">หัวใจซัพพอร์ตทีม</span>
+        <span class="badge">บัฟ/ฮีลจัดเต็ม</span>
+      </div>
+      <p class="desc">
+        Apostle ไม่ได้ถูกออกแบบมาเพื่อฆ่าคน แต่เพื่อทำให้ “คนอื่นฆ่าได้ดีขึ้น”
+        ถ้าเล่น Mass PVP หรือดันบอสใหญ่ การมี Apostle ในทีมคือความต่างระดับใหญ่
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>ฮีลหมู่/เดี่ยว</strong> – เติมเลือดหนักมากเมื่ออัปเต็ม</li>
+        <li><strong>บัฟ stat / ต้านดีบัฟ</strong> – ช่วยทีมรอดจาก burst/CC</li>
+        <li><strong>สกิลกันตาย/ลดดาเมจ</strong> – ทำให้แนวหน้าแทบไม่ล้มในไฟต์สำคัญ</li>
+      </ul>
+    </article>
+
+    <!-- 15. Artisan -->
+    <article class="card">
+      <div class="card-header">
+        <span class="rank-pill">อันดับ 15</span>
+        <div class="job-head">
+          <div class="job-name">Artisan</div>
+          <span class="tier-tag tier-c">C Tier</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-row">
+          <div class="metric-label">ความเก่งโดยรวม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">PVP 1-1</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:2;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">2</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">Party / Boss</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:3;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">3</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">สนับสนุนทีม</div>
+          <div class="metric-bar">
+            <div class="metric-fill" style="--value:4;"></div>
+            <div class="metric-scale">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="metric-value">4</div>
+          </div>
+        </div>
+      </div>
+      <div class="dmg-note">
+        ดาเมจสกิลต่อสู้ไม่สูง จุดเด่นจริง ๆ อยู่ที่สกิลทำของ/เพิ่มโอกาสตีบวก
+        ซึ่งไม่ได้ส่งผลโดยตรงกับ PVP 1-1
+      </div>
+      <div class="badge-row">
+        <span class="badge">สายทำของ</span>
+        <span class="badge">เน้นเศรษฐกิจ</span>
+      </div>
+      <p class="desc">
+        Artisan ไม่ได้ถูกออกแบบมาให้สู้ใน PVP จริงจัง เป็นอาชีพที่เน้นผลิตของ/เสริมเศรษฐกิจ
+        ถ้าเล่นเอาสนุกใน PVP ก็ทำได้ แต่ไม่ใช่ตัวเลือกที่ดีถ้าต้องการ top tier ด้านต่อสู้
+      </p>
+      <div class="skill-title">จุดเด่นสกิลจากข้อมูล Max Lv.</div>
+      <ul class="skill-list">
+        <li><strong>สกิลเพิ่มโอกาสตีบวก/ทำของ</strong> – จุดขายหลักของอาชีพ</li>
+        <li><strong>สกิลป้องกัน/utility เล็กน้อย</strong> – มีแต่ไม่ได้เด่นใน PVP</li>
+      </ul>
+    </article>
+
+  </section>
+
+  <footer>
+    วิเคราะห์จากสกิล Max Lv. (Damage%, Cooldown, Range) + มุมมอง PVP 1-1 &amp; Party โดย <strong>ยุงลาย</strong>
+  </footer>
+</div>
+</body>
+</html>
