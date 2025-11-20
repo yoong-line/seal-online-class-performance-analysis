@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seal Online – LV.251 Class PVP & Party Dashboard</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #020617;
+      --panel-soft: #020617;
+      --border: #1f2937;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --accent: #38bdf8;
+      --good: #22c55e;
+      --mid: #eab308;
+      --bad: #f97316;
+      --cc: #a855f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 55%);
+      color: var(--text-main);
+      padding: 24px;
+    }
+
+    .page { max-width: 1320px; margin: 0 auto; }
+
+    header { margin-bottom: 20px; }
+
+    header h1 {
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    header h2 {
+      font-size: 13px;
+      margin-top: 6px;
+      color: var(--text-soft);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    header .meta {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    .tabs {
+      margin: 16px 0 12px;
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid #1f2937;
+      gap: 3px;
+    }
+
+    .tab-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      background: transparent;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #0ea5e9;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    
+    .engine-section {
+      margin-top: 18px;
+    }
+    .engine-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr);
+      gap: 18px;
+      margin-top: 10px;
+    }
+    .engine-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      background: #020617;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .engine-table th,
+    .engine-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #1f2937;
+    }
+    .engine-table th {
+      background: #020617;
+      color: #e5e7eb;
+      text-align: left;
+      font-weight: 600;
+    }
+    .engine-table tbody tr:nth-child(even) {
+      background: #020617;
+    }
+    .engine-table tbody tr:nth-child(odd) {
+      background: #020617;
+    }
+    .engine-table tbody tr:hover {
+      background: #0f172a;
+    }
+    .engine-matchup-info {
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .engine-matchup-info select {
+      background: #020617;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      padding: 2px 6px;
+      color: #e5e7eb;
+      font-size: 11px;
+    }
+
+.grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 14px 14px 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .rank-pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #1e293b;
+      color: var(--text-soft);
+    }
+
+    .job-head {
+      text-align: right;
+    }
+
+    .job-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .tier-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tier-s { background: #14532d; color: #bbf7d0; }
+    .tier-a { background: #1e3a8a; color: #bfdbfe; }
+    .tier-b { background: #3f3f46; color: #e4e4e7; }
+    .tier-c { background: #7f1d1d; color: #fecaca; }
+
+    .metrics {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .metric-bar {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: var(--panel-soft);
+      overflow: hidden;
+      border: 1px solid #111827;
+    }
+
+    .metric-fill {
+      position: absolute;
+      inset: 0;
+      width: calc(var(--value) * 10%);
+      background: linear-gradient(90deg, var(--bad), var(--mid), var(--good));
+      z-index: 1;
+    }
+
+    .metric-fill.cc {
+      background: linear-gradient(90deg, #4f46e5, #a855f7, #22c55e);
+    }
+
+    .metric-scale {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      font-size: 7px;
+      color: rgba(148, 163, 184, 0.65);
+      align-items: flex-end;
+      padding-bottom: 1px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .metric-scale span {
+      text-align: center;
+    }
+
+    .metric-value {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9px;
+      color: #020617;
+      font-weight: 600;
+      z-index: 3;
+    }
+
+    .dmg-note {
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 3px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      color: #cbd5e1;
+    }
+
+    .desc {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
+    .matchup {
+      margin-top: 4px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .matchup-block {
+      background: #020617;
+      border-radius: 8px;
+      border: 1px dashed #1f2937;
+      padding: 4px 6px;
+    }
+
+    .matchup-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+
+    .matchup-title.good { color: #4ade80; }
+    .matchup-title.bad { color: #f97373; }
+
+    .matchup-list {
+      font-size: 10px;
+      color: var(--text-soft);
+      line-height: 1.35;
+    }
+
+    .skill-title {
+      margin-top: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #cbd5e1;
+    }
+
+    .skill-list {
+      margin-top: 2px;
+      margin-left: 12px;
+      font-size: 10px;
+      color: var(--text-soft);
+      line-height: 1.35;
+    }
+
+    .skill-list li { margin-bottom: 1px; }
+
+    /* Party section */
+
+    .party-section {
+      margin-top: 28px;
+    }
+
+    .party-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .party-header h3 {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .party-note {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .party-grid {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .party-card {
+      background: #020617;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      padding: 10px 12px;
+    }
+
+    .party-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .party-label {
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .party-lineup {
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .party-lineup span {
+      display: inline-block;
+      margin-right: 4px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      font-size: 10px;
+    }
+
+    .party-text {
+      font-size: 10px;
+      color: var(--text-soft);
+      line-height: 1.4;
+      margin-top: 3px;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 10px;
+      color: var(--text-soft);
+      text-align: right;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .party-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Seal Online – LV.251 Class Dashboard</h1>
+    <h2>PVP 1-1 • Party 6v6 • Support & Matchup (อิง Max Lv. Skill จาก seal-univers Wiki)</h2>
+    <div class="meta">
+      • สมมติทุกอาชีพ <strong>เลเวล 251</strong> ใช้ชุดไอเทมระดับเดียวกัน (Set A สมมติ) ไม่มีความต่างด้านของและเลเวล<br>
+      • วิเคราะห์จากไฟล์ <code>seal_wiki_jobs_and_skills_full.json</code> – ใช้ค่าจาก <strong>level_max_stats</strong> (Damage%, AP Use, Cooldown, Cast Time, Range) + ชนิดสกิล/คำอธิบาย<br>
+      • คะแนน 1–10 = Normalize ระหว่างอาชีพ โดยดูภาพรวม:
+        Burst / DPS ต่อเนื่อง, Skill Range & Mobility, Heal / ดูดเลือด / สะท้อน, Buff/Debuff ให้ทีม, CC + สกิลห้ามฮีล ฯลฯ<br>
+      • Section ด้านล่างมีตัวอย่าง <strong>Party 6v6</strong> 5 ทีม (6 อาชีพไม่ซ้ำกัน) ตามเมต้า “ของเท่ากัน เลเวลเท่ากัน”
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pvp">PVP 1-1 Ranking</button>
+      <button class="tab-btn" data-tab="party">Party 6v6 Meta</button>
+    
+      <button class="tab-btn" data-tab="engine-v4">Engine v4 Simulation</button></div>
+  </header>
+
+  <!-- PVP GRID -->
+  <section id="pvp-section" class="grid">
+    <!-- cards generated by JS -->
+  </section>
+
+  <!-- PARTY SECTION -->
+  <section id="party-section" class="party-section" style="display:none;">
+    <div class="party-header">
+      <h3>Party 6v6 – ตัวอย่างทีม 5 ชุด (ไม่ซ้ำอาชีพ)</h3>
+      <div class="party-note">
+        สมมติว่าทั้งหมดเลเวล 251 / ของระดับเดียวกัน / ปาร์ตี้มี Apostle หรือ Chef อย่างน้อย 1
+        เน้นให้ครบดาเมจ – คุมไฟต์ – ซัพพอร์ต
+      </div>
+    </div>
+    <div class="party-grid" id="party-grid"></div>
+  </section>
+  <!-- ENGINE V4 SECTION -->
+  <section id="engine-v4-section" class="engine-section" style="display:none; margin-top:18px;">
+    <div class="party-header">
+      <h3>Engine v4 – PVP 1-1 Simulation</h3>
+      <div class="party-note">
+        จำลองไฟต์ 1-1 จากข้อมูลสกิลจริง (Damage%, Cooldown, Cast Time, Range) + ACC/EVR/Heal/Reflect ตามสมมติฐาน LV.251 ของเท่ากัน
+        ระบบจะรันไฟต์หลายรอบต่อคู่ แล้วแสดง Winrate / Time-to-Kill โดยประมาณ
+      </div>
+    </div>
+
+    <div class="engine-grid">
+      <div class="engine-left">
+        <h4>อันดับ PVP 1-1 จาก Engine v4</h4>
+        <table class="engine-table" id="engine-ranking-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>อาชีพ</th>
+              <th>Winrate</th>
+              <th>TTK (วิ)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="engine-right">
+        <h4>Matchup Detail</h4>
+        <div class="engine-matchup-info">
+          <label>เลือกอาชีพ:</label>
+          <select id="engine-job-select"></select>
+        </div>
+        <table class="engine-table" id="engine-matchup-table">
+          <thead>
+            <tr>
+              <th>vs</th>
+              <th>Winrate</th>
+              <th>เวลาจบไฟต์เฉลี่ย</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <footer>
+    วิเคราะห์ PVP / Party จากข้อมูลสกิล Max Lv. ใน seal-univers wiki + ประสบการณ์เล่นจริง โดย <strong>ยุงลาย</strong>
+  </footer>
+</div>
+
+<script>
+const jobV4Stats = {
+  "Apostle": {
+    "job_name": "Apostle",
+    "wiki_name": "Apostle",
+    "winrate": 0.7955555555555556,
+    "lossrate": 0.20222222222222222,
+    "drawrate": 0.0022222222222222222,
+    "avg_ttk": 0.9315555555555555,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 1200.0,
+    "move_speed": 5.0
+  },
+  "Archer": {
+    "job_name": "Archer",
+    "wiki_name": "Archer",
+    "winrate": 0.7933333333333333,
+    "lossrate": 0.18444444444444444,
+    "drawrate": 0.022222222222222223,
+    "avg_ttk": 0.6326666666666666,
+    "hp": 150000,
+    "atk_scale": 11.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8500000000000001,
+    "evr_score": 0.1,
+    "crit_chance": 0.2,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 5.5
+  },
+  "Artisan": {
+    "job_name": "Artisan",
+    "wiki_name": "Artisan",
+    "winrate": 0.45555555555555555,
+    "lossrate": 0.5422222222222223,
+    "drawrate": 0.0022222222222222222,
+    "avg_ttk": 2.923333333333333,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.98,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 4.5
+  },
+  "Assassin": {
+    "job_name": "Assassin",
+    "wiki_name": "Assassin",
+    "winrate": 0.6688888888888889,
+    "lossrate": 0.32666666666666666,
+    "drawrate": 0.0044444444444444444,
+    "avg_ttk": 1.161333333333333,
+    "hp": 150000,
+    "atk_scale": 12.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8,
+    "evr_score": 0.16,
+    "crit_chance": 0.2,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 5.5
+  },
+  "Berserker": {
+    "job_name": "Berserker",
+    "wiki_name": "Berserker",
+    "winrate": 0.25555555555555554,
+    "lossrate": 0.7377777777777778,
+    "drawrate": 0.006666666666666667,
+    "avg_ttk": 2.7682222222222217,
+    "hp": 150000,
+    "atk_scale": 11.0,
+    "dmg_taken_mult": 0.98,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 1200.0,
+    "move_speed": 5.0
+  },
+  "Chef": {
+    "job_name": "Chef",
+    "wiki_name": "Chef",
+    "winrate": 0.4266666666666667,
+    "lossrate": 0.5688888888888889,
+    "drawrate": 0.0044444444444444444,
+    "avg_ttk": 2.433555555555555,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 1200.0,
+    "move_speed": 5.0
+  },
+  "Defender": {
+    "job_name": "Defender",
+    "wiki_name": "Defender",
+    "winrate": 0.5933333333333334,
+    "lossrate": 0.3022222222222222,
+    "drawrate": 0.10444444444444445,
+    "avg_ttk": 4.22888888888889,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.84,
+    "acc_score": 0.8,
+    "evr_score": 0.07,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.2,
+    "heal_regen_per_sec": 600.0,
+    "move_speed": 4.5
+  },
+  "Demolisionist": {
+    "job_name": "Demolisionist",
+    "wiki_name": "Demolitionist",
+    "winrate": 0.09777777777777778,
+    "lossrate": 0.8977777777777778,
+    "drawrate": 0.0044444444444444444,
+    "avg_ttk": 3.490888888888889,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 600.0,
+    "move_speed": 5.0
+  },
+  "Fire Wizard": {
+    "job_name": "Fire Wizard",
+    "wiki_name": "Fire Wizard",
+    "winrate": 0.6977777777777778,
+    "lossrate": 0.29555555555555557,
+    "drawrate": 0.006666666666666667,
+    "avg_ttk": 1.0202222222222224,
+    "hp": 150000,
+    "atk_scale": 11.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8500000000000001,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 5.0
+  },
+  "Food Fighter": {
+    "job_name": "Food Fighter",
+    "wiki_name": "Food Fighter",
+    "winrate": 0.3244444444444444,
+    "lossrate": 0.5911111111111111,
+    "drawrate": 0.08444444444444445,
+    "avg_ttk": 5.203777777777778,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.84,
+    "acc_score": 0.8,
+    "evr_score": 0.07,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.2,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 4.5
+  },
+  "Gambler": {
+    "job_name": "Gambler",
+    "wiki_name": "Gambler",
+    "winrate": 0.13111111111111112,
+    "lossrate": 0.8666666666666667,
+    "drawrate": 0.0022222222222222222,
+    "avg_ttk": 3.2593333333333323,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.98,
+    "acc_score": 0.8,
+    "evr_score": 0.16,
+    "crit_chance": 0.2,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 5.0
+  },
+  "Gunner": {
+    "job_name": "Gunner",
+    "wiki_name": "Gunner",
+    "winrate": 0.4866666666666667,
+    "lossrate": 0.5133333333333333,
+    "drawrate": 0.0,
+    "avg_ttk": 1.8753333333333335,
+    "hp": 150000,
+    "atk_scale": 11.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8500000000000001,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 600.0,
+    "move_speed": 5.5
+  },
+  "Ice Wizard": {
+    "job_name": "Ice Wizard",
+    "wiki_name": "Ice Wizard",
+    "winrate": 0.8022222222222222,
+    "lossrate": 0.08222222222222222,
+    "drawrate": 0.11555555555555555,
+    "avg_ttk": 0.2993333333333333,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8500000000000001,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 5.0
+  },
+  "Renegade": {
+    "job_name": "Renegade",
+    "wiki_name": "Renegade",
+    "winrate": 0.5311111111111111,
+    "lossrate": 0.46444444444444444,
+    "drawrate": 0.0044444444444444444,
+    "avg_ttk": 2.0068888888888887,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.84,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 0.0,
+    "move_speed": 5.0
+  },
+  "Sword Master": {
+    "job_name": "Sword Master",
+    "wiki_name": "SwordMaster",
+    "winrate": 0.6444444444444445,
+    "lossrate": 0.35333333333333333,
+    "drawrate": 0.0022222222222222222,
+    "avg_ttk": 2.6064444444444432,
+    "hp": 150000,
+    "atk_scale": 11.0,
+    "dmg_taken_mult": 0.96,
+    "acc_score": 0.8,
+    "evr_score": 0.16,
+    "crit_chance": 0.2,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 600.0,
+    "move_speed": 5.5
+  },
+  "Templar": {
+    "job_name": "Templar",
+    "wiki_name": "Templar",
+    "winrate": 0.5955555555555555,
+    "lossrate": 0.3977777777777778,
+    "drawrate": 0.006666666666666667,
+    "avg_ttk": 1.8926666666666663,
+    "hp": 150000,
+    "atk_scale": 9.0,
+    "dmg_taken_mult": 0.84,
+    "acc_score": 0.8,
+    "evr_score": 0.1,
+    "crit_chance": 0.1,
+    "crit_mult": 1.5,
+    "reflect_ratio": 0.0,
+    "heal_regen_per_sec": 600.0,
+    "move_speed": 5.0
+  }
+};
+
+const jobV4Matchups = {
+  "Apostle": {
+    "Apostle": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Archer": {
+      "winrate": 0.6333333333333333,
+      "avgTime": 0.09
+    },
+    "Artisan": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 0.7466666666666665
+    },
+    "Assassin": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 0.23666666666666666
+    },
+    "Berserker": {
+      "winrate": 0.8,
+      "avgTime": 0.9599999999999997
+    },
+    "Chef": {
+      "winrate": 0.7,
+      "avgTime": 1.903333333333333
+    },
+    "Defender": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 1.24
+    },
+    "Demolisionist": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 2.473333333333334
+    },
+    "Fire Wizard": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 0.08
+    },
+    "Food Fighter": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 2.0033333333333334
+    },
+    "Gambler": {
+      "winrate": 0.9,
+      "avgTime": 1.5166666666666666
+    },
+    "Gunner": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 0.3833333333333332
+    },
+    "Ice Wizard": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 0.0
+    },
+    "Renegade": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 0.7299999999999999
+    },
+    "Sword Master": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 1.3599999999999997
+    },
+    "Templar": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 0.25
+    }
+  },
+  "Archer": {
+    "Apostle": {
+      "winrate": 0.26666666666666666,
+      "avgTime": 0.05999999999999999
+    },
+    "Archer": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Artisan": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 1.3366666666666664
+    },
+    "Assassin": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 0.41
+    },
+    "Berserker": {
+      "winrate": 1.0,
+      "avgTime": 0.33999999999999997
+    },
+    "Chef": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 0.33000000000000007
+    },
+    "Defender": {
+      "winrate": 0.3333333333333333,
+      "avgTime": 1.8033333333333326
+    },
+    "Demolisionist": {
+      "winrate": 1.0,
+      "avgTime": 0.32999999999999996
+    },
+    "Fire Wizard": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 0.38
+    },
+    "Food Fighter": {
+      "winrate": 0.9,
+      "avgTime": 1.9833333333333327
+    },
+    "Gambler": {
+      "winrate": 1.0,
+      "avgTime": 0.4000000000000001
+    },
+    "Gunner": {
+      "winrate": 1.0,
+      "avgTime": 0.34
+    },
+    "Ice Wizard": {
+      "winrate": 0.2,
+      "avgTime": 0.08
+    },
+    "Renegade": {
+      "winrate": 1.0,
+      "avgTime": 0.36
+    },
+    "Sword Master": {
+      "winrate": 0.6333333333333333,
+      "avgTime": 0.8866666666666668
+    },
+    "Templar": {
+      "winrate": 1.0,
+      "avgTime": 0.4500000000000002
+    }
+  },
+  "Artisan": {
+    "Apostle": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 2.3766666666666665
+    },
+    "Archer": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 1.5499999999999996
+    },
+    "Artisan": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Assassin": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 2.206666666666666
+    },
+    "Berserker": {
+      "winrate": 0.7,
+      "avgTime": 3.623333333333333
+    },
+    "Chef": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 2.7299999999999995
+    },
+    "Defender": {
+      "winrate": 0.5,
+      "avgTime": 4.173333333333334
+    },
+    "Demolisionist": {
+      "winrate": 0.9,
+      "avgTime": 3.986666666666666
+    },
+    "Fire Wizard": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 1.7299999999999998
+    },
+    "Food Fighter": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 5.44
+    },
+    "Gambler": {
+      "winrate": 0.8,
+      "avgTime": 4.086666666666666
+    },
+    "Gunner": {
+      "winrate": 0.3,
+      "avgTime": 2.0466666666666664
+    },
+    "Ice Wizard": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 1.3966666666666663
+    },
+    "Renegade": {
+      "winrate": 0.3,
+      "avgTime": 2.9899999999999993
+    },
+    "Sword Master": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 2.4166666666666656
+    },
+    "Templar": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 3.0966666666666667
+    }
+  },
+  "Assassin": {
+    "Apostle": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 0.32
+    },
+    "Archer": {
+      "winrate": 0.16666666666666666,
+      "avgTime": 0.4399999999999999
+    },
+    "Artisan": {
+      "winrate": 0.7,
+      "avgTime": 2.0433333333333334
+    },
+    "Assassin": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Berserker": {
+      "winrate": 1.0,
+      "avgTime": 0.8166666666666665
+    },
+    "Chef": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 0.85
+    },
+    "Defender": {
+      "winrate": 0.5666666666666667,
+      "avgTime": 2.113333333333333
+    },
+    "Demolisionist": {
+      "winrate": 1.0,
+      "avgTime": 1.0033333333333334
+    },
+    "Fire Wizard": {
+      "winrate": 0.6,
+      "avgTime": 0.6300000000000001
+    },
+    "Food Fighter": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 3.0633333333333335
+    },
+    "Gambler": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 1.1066666666666665
+    },
+    "Gunner": {
+      "winrate": 0.7666666666666667,
+      "avgTime": 0.8966666666666665
+    },
+    "Ice Wizard": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 0.14666666666666667
+    },
+    "Renegade": {
+      "winrate": 0.9,
+      "avgTime": 0.9599999999999996
+    },
+    "Sword Master": {
+      "winrate": 0.4666666666666667,
+      "avgTime": 1.8699999999999999
+    },
+    "Templar": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 1.16
+    }
+  },
+  "Berserker": {
+    "Apostle": {
+      "winrate": 0.2,
+      "avgTime": 1.1700000000000004
+    },
+    "Archer": {
+      "winrate": 0.0,
+      "avgTime": 0.35999999999999993
+    },
+    "Artisan": {
+      "winrate": 0.2,
+      "avgTime": 3.2733333333333325
+    },
+    "Assassin": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 0.7900000000000001
+    },
+    "Berserker": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Chef": {
+      "winrate": 0.4,
+      "avgTime": 2.8799999999999994
+    },
+    "Defender": {
+      "winrate": 0.2,
+      "avgTime": 5.486666666666666
+    },
+    "Demolisionist": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 5.833333333333332
+    },
+    "Fire Wizard": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.7300000000000002
+    },
+    "Food Fighter": {
+      "winrate": 0.4666666666666667,
+      "avgTime": 7.329999999999998
+    },
+    "Gambler": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 4.193333333333332
+    },
+    "Gunner": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 1.2333333333333334
+    },
+    "Ice Wizard": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.27666666666666667
+    },
+    "Renegade": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 2.5300000000000002
+    },
+    "Sword Master": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 3.656666666666666
+    },
+    "Templar": {
+      "winrate": 0.2,
+      "avgTime": 1.78
+    }
+  },
+  "Chef": {
+    "Apostle": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 2.08
+    },
+    "Archer": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 0.36000000000000004
+    },
+    "Artisan": {
+      "winrate": 0.5,
+      "avgTime": 3.2733333333333325
+    },
+    "Assassin": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 1.0066666666666666
+    },
+    "Berserker": {
+      "winrate": 0.7666666666666667,
+      "avgTime": 2.6999999999999997
+    },
+    "Chef": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Defender": {
+      "winrate": 0.3333333333333333,
+      "avgTime": 3.9833333333333334
+    },
+    "Demolisionist": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 4.013333333333333
+    },
+    "Fire Wizard": {
+      "winrate": 0.2,
+      "avgTime": 0.7000000000000003
+    },
+    "Food Fighter": {
+      "winrate": 0.4666666666666667,
+      "avgTime": 6.6866666666666665
+    },
+    "Gambler": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 2.53
+    },
+    "Gunner": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 2.063333333333333
+    },
+    "Ice Wizard": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 0.5399999999999999
+    },
+    "Renegade": {
+      "winrate": 0.5,
+      "avgTime": 1.989999999999999
+    },
+    "Sword Master": {
+      "winrate": 0.26666666666666666,
+      "avgTime": 2.886666666666665
+    },
+    "Templar": {
+      "winrate": 0.26666666666666666,
+      "avgTime": 1.6899999999999993
+    }
+  },
+  "Defender": {
+    "Apostle": {
+      "winrate": 0.3,
+      "avgTime": 3.6
+    },
+    "Archer": {
+      "winrate": 0.3333333333333333,
+      "avgTime": 1.6400000000000001
+    },
+    "Artisan": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 4.356666666666667
+    },
+    "Assassin": {
+      "winrate": 0.4,
+      "avgTime": 2.2666666666666666
+    },
+    "Berserker": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 6.25
+    },
+    "Chef": {
+      "winrate": 0.7,
+      "avgTime": 4.846666666666667
+    },
+    "Defender": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Demolisionist": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 7.9500000000000055
+    },
+    "Fire Wizard": {
+      "winrate": 0.4666666666666667,
+      "avgTime": 2.143333333333333
+    },
+    "Food Fighter": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 7.983333333333335
+    },
+    "Gambler": {
+      "winrate": 1.0,
+      "avgTime": 4.683333333333334
+    },
+    "Gunner": {
+      "winrate": 0.6333333333333333,
+      "avgTime": 2.9366666666666656
+    },
+    "Ice Wizard": {
+      "winrate": 0.3,
+      "avgTime": 1.7166666666666663
+    },
+    "Renegade": {
+      "winrate": 0.43333333333333335,
+      "avgTime": 3.9766666666666666
+    },
+    "Sword Master": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 4.779999999999999
+    },
+    "Templar": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 4.303333333333332
+    }
+  },
+  "Demolisionist": {
+    "Apostle": {
+      "winrate": 0.3,
+      "avgTime": 3.1833333333333345
+    },
+    "Archer": {
+      "winrate": 0.0,
+      "avgTime": 0.37000000000000005
+    },
+    "Artisan": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 3.523333333333333
+    },
+    "Assassin": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.9333333333333337
+    },
+    "Berserker": {
+      "winrate": 0.16666666666666666,
+      "avgTime": 5.426666666666666
+    },
+    "Chef": {
+      "winrate": 0.1,
+      "avgTime": 4.0633333333333335
+    },
+    "Defender": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 5.670000000000001
+    },
+    "Demolisionist": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Fire Wizard": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.9299999999999998
+    },
+    "Food Fighter": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 9.366666666666672
+    },
+    "Gambler": {
+      "winrate": 0.43333333333333335,
+      "avgTime": 8.58
+    },
+    "Gunner": {
+      "winrate": 0.1,
+      "avgTime": 2.4099999999999993
+    },
+    "Ice Wizard": {
+      "winrate": 0.0,
+      "avgTime": 0.3766666666666667
+    },
+    "Renegade": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 2.4333333333333322
+    },
+    "Sword Master": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 2.6466666666666656
+    },
+    "Templar": {
+      "winrate": 0.0,
+      "avgTime": 2.4499999999999997
+    }
+  },
+  "Fire Wizard": {
+    "Apostle": {
+      "winrate": 0.26666666666666666,
+      "avgTime": 0.28333333333333327
+    },
+    "Archer": {
+      "winrate": 0.26666666666666666,
+      "avgTime": 0.31
+    },
+    "Artisan": {
+      "winrate": 0.8,
+      "avgTime": 2.066666666666667
+    },
+    "Assassin": {
+      "winrate": 0.4,
+      "avgTime": 0.67
+    },
+    "Berserker": {
+      "winrate": 1.0,
+      "avgTime": 0.7799999999999998
+    },
+    "Chef": {
+      "winrate": 0.9,
+      "avgTime": 0.7800000000000001
+    },
+    "Defender": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 1.986666666666667
+    },
+    "Demolisionist": {
+      "winrate": 1.0,
+      "avgTime": 0.7433333333333335
+    },
+    "Fire Wizard": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Food Fighter": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 2.3
+    },
+    "Gambler": {
+      "winrate": 1.0,
+      "avgTime": 1.0266666666666668
+    },
+    "Gunner": {
+      "winrate": 0.9,
+      "avgTime": 0.6966666666666665
+    },
+    "Ice Wizard": {
+      "winrate": 0.2,
+      "avgTime": 0.23999999999999996
+    },
+    "Renegade": {
+      "winrate": 0.7666666666666667,
+      "avgTime": 0.8433333333333334
+    },
+    "Sword Master": {
+      "winrate": 0.5,
+      "avgTime": 1.6399999999999995
+    },
+    "Templar": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 0.9366666666666666
+    }
+  },
+  "Food Fighter": {
+    "Apostle": {
+      "winrate": 0.2,
+      "avgTime": 4.060000000000001
+    },
+    "Archer": {
+      "winrate": 0.0,
+      "avgTime": 2.2599999999999993
+    },
+    "Artisan": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 6.293333333333334
+    },
+    "Assassin": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 2.8033333333333332
+    },
+    "Berserker": {
+      "winrate": 0.5666666666666667,
+      "avgTime": 7.2666666666666675
+    },
+    "Chef": {
+      "winrate": 0.3,
+      "avgTime": 5.609999999999999
+    },
+    "Defender": {
+      "winrate": 0.4,
+      "avgTime": 8.293333333333337
+    },
+    "Demolisionist": {
+      "winrate": 0.7666666666666667,
+      "avgTime": 9.283333333333337
+    },
+    "Fire Wizard": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 2.6633333333333327
+    },
+    "Food Fighter": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Gambler": {
+      "winrate": 0.9,
+      "avgTime": 7.853333333333337
+    },
+    "Gunner": {
+      "winrate": 0.3,
+      "avgTime": 4.496666666666668
+    },
+    "Ice Wizard": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 1.9933333333333332
+    },
+    "Renegade": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 4.913333333333333
+    },
+    "Sword Master": {
+      "winrate": 0.4,
+      "avgTime": 5.179999999999997
+    },
+    "Templar": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 5.086666666666665
+    }
+  },
+  "Gambler": {
+    "Apostle": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 1.5666666666666667
+    },
+    "Archer": {
+      "winrate": 0.0,
+      "avgTime": 0.41000000000000003
+    },
+    "Artisan": {
+      "winrate": 0.4,
+      "avgTime": 4.05
+    },
+    "Assassin": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.8600000000000001
+    },
+    "Berserker": {
+      "winrate": 0.2,
+      "avgTime": 4.9033333333333315
+    },
+    "Chef": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 4.583333333333334
+    },
+    "Defender": {
+      "winrate": 0.1,
+      "avgTime": 5.736666666666667
+    },
+    "Demolisionist": {
+      "winrate": 0.6,
+      "avgTime": 7.0833333333333295
+    },
+    "Fire Wizard": {
+      "winrate": 0.0,
+      "avgTime": 0.7166666666666666
+    },
+    "Food Fighter": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 8.54666666666667
+    },
+    "Gambler": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Gunner": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 2.556666666666667
+    },
+    "Ice Wizard": {
+      "winrate": 0.0,
+      "avgTime": 0.4933333333333333
+    },
+    "Renegade": {
+      "winrate": 0.0,
+      "avgTime": 1.96
+    },
+    "Sword Master": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 3.3333333333333317
+    },
+    "Templar": {
+      "winrate": 0.0,
+      "avgTime": 2.0899999999999994
+    }
+  },
+  "Gunner": {
+    "Apostle": {
+      "winrate": 0.16666666666666666,
+      "avgTime": 0.62
+    },
+    "Archer": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 0.41000000000000003
+    },
+    "Artisan": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 2.583333333333334
+    },
+    "Assassin": {
+      "winrate": 0.3333333333333333,
+      "avgTime": 0.8099999999999999
+    },
+    "Berserker": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 1.7633333333333332
+    },
+    "Chef": {
+      "winrate": 0.6333333333333333,
+      "avgTime": 2.4
+    },
+    "Defender": {
+      "winrate": 0.43333333333333335,
+      "avgTime": 3.3033333333333337
+    },
+    "Demolisionist": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 2.7600000000000002
+    },
+    "Fire Wizard": {
+      "winrate": 0.16666666666666666,
+      "avgTime": 0.6600000000000001
+    },
+    "Food Fighter": {
+      "winrate": 0.7666666666666667,
+      "avgTime": 5.293333333333335
+    },
+    "Gambler": {
+      "winrate": 0.9,
+      "avgTime": 1.6099999999999997
+    },
+    "Gunner": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Ice Wizard": {
+      "winrate": 0.3333333333333333,
+      "avgTime": 0.53
+    },
+    "Renegade": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 1.7033333333333327
+    },
+    "Sword Master": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 2.05
+    },
+    "Templar": {
+      "winrate": 0.5,
+      "avgTime": 1.633333333333333
+    }
+  },
+  "Ice Wizard": {
+    "Apostle": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 0.11666666666666667
+    },
+    "Archer": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 0.05
+    },
+    "Artisan": {
+      "winrate": 0.9,
+      "avgTime": 0.49999999999999994
+    },
+    "Assassin": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 0.17999999999999997
+    },
+    "Berserker": {
+      "winrate": 1.0,
+      "avgTime": 0.29
+    },
+    "Chef": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 0.46
+    },
+    "Defender": {
+      "winrate": 0.1,
+      "avgTime": 0.45
+    },
+    "Demolisionist": {
+      "winrate": 1.0,
+      "avgTime": 0.4
+    },
+    "Fire Wizard": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 0.09000000000000001
+    },
+    "Food Fighter": {
+      "winrate": 0.13333333333333333,
+      "avgTime": 0.3633333333333333
+    },
+    "Gambler": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 0.5833333333333334
+    },
+    "Gunner": {
+      "winrate": 0.8666666666666667,
+      "avgTime": 0.29999999999999993
+    },
+    "Ice Wizard": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Renegade": {
+      "winrate": 0.9,
+      "avgTime": 0.13
+    },
+    "Sword Master": {
+      "winrate": 0.9,
+      "avgTime": 0.38333333333333325
+    },
+    "Templar": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 0.1933333333333333
+    }
+  },
+  "Renegade": {
+    "Apostle": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 0.6399999999999998
+    },
+    "Archer": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.47000000000000003
+    },
+    "Artisan": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 2.6533333333333338
+    },
+    "Assassin": {
+      "winrate": 0.4,
+      "avgTime": 1.1166666666666663
+    },
+    "Berserker": {
+      "winrate": 0.8333333333333334,
+      "avgTime": 3.2600000000000002
+    },
+    "Chef": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 2.0899999999999994
+    },
+    "Defender": {
+      "winrate": 0.4,
+      "avgTime": 3.4866666666666664
+    },
+    "Demolisionist": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 2.773333333333334
+    },
+    "Fire Wizard": {
+      "winrate": 0.26666666666666666,
+      "avgTime": 0.83
+    },
+    "Food Fighter": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 3.7000000000000006
+    },
+    "Gambler": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 2.1799999999999993
+    },
+    "Gunner": {
+      "winrate": 0.6,
+      "avgTime": 1.9000000000000001
+    },
+    "Ice Wizard": {
+      "winrate": 0.03333333333333333,
+      "avgTime": 0.02
+    },
+    "Renegade": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Sword Master": {
+      "winrate": 0.4666666666666667,
+      "avgTime": 3.163333333333333
+    },
+    "Templar": {
+      "winrate": 0.43333333333333335,
+      "avgTime": 1.82
+    }
+  },
+  "Sword Master": {
+    "Apostle": {
+      "winrate": 0.6,
+      "avgTime": 1.4200000000000002
+    },
+    "Archer": {
+      "winrate": 0.43333333333333335,
+      "avgTime": 1.7366666666666661
+    },
+    "Artisan": {
+      "winrate": 0.8,
+      "avgTime": 1.9433333333333327
+    },
+    "Assassin": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 2.1266666666666665
+    },
+    "Berserker": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 2.729999999999999
+    },
+    "Chef": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 3.453333333333333
+    },
+    "Defender": {
+      "winrate": 0.6666666666666666,
+      "avgTime": 5.003333333333331
+    },
+    "Demolisionist": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 2.7266666666666657
+    },
+    "Fire Wizard": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 1.4566666666666668
+    },
+    "Food Fighter": {
+      "winrate": 0.8,
+      "avgTime": 5.25
+    },
+    "Gambler": {
+      "winrate": 0.9333333333333333,
+      "avgTime": 1.933333333333333
+    },
+    "Gunner": {
+      "winrate": 0.6,
+      "avgTime": 1.8366666666666667
+    },
+    "Ice Wizard": {
+      "winrate": 0.5666666666666667,
+      "avgTime": 0.87
+    },
+    "Renegade": {
+      "winrate": 0.4666666666666667,
+      "avgTime": 2.949999999999999
+    },
+    "Sword Master": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    },
+    "Templar": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 3.6599999999999997
+    }
+  },
+  "Templar": {
+    "Apostle": {
+      "winrate": 0.36666666666666664,
+      "avgTime": 0.7999999999999997
+    },
+    "Archer": {
+      "winrate": 0.1,
+      "avgTime": 0.4100000000000001
+    },
+    "Artisan": {
+      "winrate": 0.9,
+      "avgTime": 2.9099999999999993
+    },
+    "Assassin": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 1.0199999999999998
+    },
+    "Berserker": {
+      "winrate": 0.9666666666666667,
+      "avgTime": 2.03
+    },
+    "Chef": {
+      "winrate": 0.7333333333333333,
+      "avgTime": 1.4999999999999998
+    },
+    "Defender": {
+      "winrate": 0.5333333333333333,
+      "avgTime": 3.5699999999999994
+    },
+    "Demolisionist": {
+      "winrate": 1.0,
+      "avgTime": 2.11
+    },
+    "Fire Wizard": {
+      "winrate": 0.23333333333333334,
+      "avgTime": 0.85
+    },
+    "Food Fighter": {
+      "winrate": 0.8,
+      "avgTime": 4.679999999999998
+    },
+    "Gambler": {
+      "winrate": 1.0,
+      "avgTime": 1.6999999999999997
+    },
+    "Gunner": {
+      "winrate": 0.7666666666666667,
+      "avgTime": 1.6166666666666665
+    },
+    "Ice Wizard": {
+      "winrate": 0.06666666666666667,
+      "avgTime": 0.2933333333333333
+    },
+    "Renegade": {
+      "winrate": 0.6333333333333333,
+      "avgTime": 1.68
+    },
+    "Sword Master": {
+      "winrate": 0.6,
+      "avgTime": 3.22
+    },
+    "Templar": {
+      "winrate": 0.0,
+      "avgTime": 0.0
+    }
+  }
+};
+
+
+  function renderEngineV4() {
+    const rankingTableBody = document.querySelector("#engine-ranking-table tbody");
+    const matchupSelect = document.getElementById("engine-job-select");
+    const matchupTableBody = document.querySelector("#engine-matchup-table tbody");
+    if (!rankingTableBody || !matchupSelect || !matchupTableBody) return;
+
+    const entries = Object.values(jobV4Stats).slice().sort((a, b) => b.winrate - a.winrate);
+    rankingTableBody.innerHTML = "";
+    entries.forEach((job, idx) => {
+      const tr = document.createElement("tr");
+      const wr = (job.winrate * 100).toFixed(1) + "%";
+      const ttk = job.avg_ttk.toFixed(1);
+      tr.innerHTML = `<td>${idx + 1}</td><td>${job.job_name}</td><td>${wr}</td><td>${ttk}</td>`;
+      rankingTableBody.appendChild(tr);
+    });
+
+    matchupSelect.innerHTML = "";
+    entries.forEach((job) => {
+      const opt = document.createElement("option");
+      opt.value = job.job_name;
+      opt.textContent = job.job_name;
+      matchupSelect.appendChild(opt);
+    });
+
+    function renderMatchups(jobName) {
+      const vsData = jobV4Matchups[jobName] || {};
+      const rows = [];
+      Object.keys(vsData).forEach((opp) => {
+        if (opp === jobName) return;
+        const info = vsData[opp];
+        const wr = (info.winrate * 100).toFixed(1) + "%";
+        const t = info.avgTime.toFixed(1) + " วิ";
+        rows.push({ opp, wr, t });
+      });
+      rows.sort((a, b) => parseFloat(b.wr) - parseFloat(a.wr));
+      matchupTableBody.innerHTML = "";
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.opp}</td><td>${row.wr}</td><td>${row.t}</td>`;
+        matchupTableBody.appendChild(tr);
+      });
+    }
+
+    matchupSelect.addEventListener("change", (e) => {
+      renderMatchups(e.target.value);
+    });
+
+    if (entries.length > 0) {
+      matchupSelect.value = entries[0].job_name;
+      renderMatchups(entries[0].job_name);
+    }
+  }
+
+  // extend tab switcher to include engine-v4
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll(".tab-btn");
+    const pvpSection = document.getElementById("pvp-section");
+    const partySection = document.getElementById("party-section");
+    const engineSection = document.getElementById("engine-v4-section");
+
+    tabs.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        tabs.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.getAttribute("data-tab");
+        if (tab === "pvp") {
+          pvpSection.style.display = "grid";
+          partySection.style.display = "none";
+          engineSection.style.display = "none";
+        } else if (tab === "party") {
+          pvpSection.style.display = "none";
+          partySection.style.display = "block";
+          engineSection.style.display = "none";
+        } else if (tab === "engine-v4") {
+          pvpSection.style.display = "none";
+          partySection.style.display = "none";
+          engineSection.style.display = "block";
+          renderEngineV4();
+        }
+      });
+    });
+  });
+  // ข้อมูลสรุปต่ออาชีพ (ตัวเลข / ข้อความมาจากการอ่านไฟล์ skills_full + เมต้าในเกม)
+  const jobsData = [
+    {
+      rank: 1,
+      name: "Sword Master",
+      tier: "S",
+      overall: 9,
+      pvp: 9,
+      party: 8,
+      support: 4,       // มีบัฟตัวเอง + ดูดเลือดบ้าง แต่ไม่ได้บัฟทีมเยอะ
+      sustain: 8,       // Lifesteal / sustain จากสกิลคลาส 2
+      control: 7,       // มีสกิลพุ่ง / ล้ม / lock motion
+      range: 6,
+      dmgNote: "คอมโบสกิลสายดาบที่ Damage% รวมจาก Giga Slash / Blade Waltz / Sword Dance สูงมากเทียบ Cooldown – พาลบ 150k HP ได้ใน 1–2 ชุดถ้าเข้าเต็ม",
+      badges: ["คอมโบประชิดหนัก", "ดูดเลือดจากสกิล", "เปิดก่อนแล้วลบตัวบางได้", "แพ้ไกลจัด + CC ต่อเนื่อง"],
+      desc: "เล่นแบบสาดสกิลเป็นหลักแล้วคั่นด้วยคอมโบปกติ ชนะทางตัวบางที่ไม่มีเครื่องมือหนี แต่ถ้าโดน Kite จัด ๆ จาก Archer/Gunner จะวิ่งตามลำบาก.",
+      goodVs: "Berserker, Gambler, Fire Wizard, Demolitionist, Artisan",
+      badVs: "Archer, Gunner, Ice Wizard, Defender, Assassin",
+      keySkills: [
+        "คอมโบดาบคลาส 1 ที่อัปเลเวลสูง + Sword Master สกิลคลาส 2 ทำ Lifesteal และเพิ่มดาเมจกายภาพ",
+        "สกิลพุ่งระยะกลาง ใช้ไล่ปิดจังหวะคู่ต่อสู้อยู่ต่ำ HP",
+        "บัฟเพิ่ม Critical / ATK ตนเอง ทำให้ burst แรงมากในช่วงคอมโบ"
+      ]
+    },
+    {
+      rank: 2,
+      name: "Assassin",
+      tier: "S",
+      overall: 9,
+      pvp: 9,
+      party: 6,
+      support: 2,
+      sustain: 4,
+      control: 8,
+      range: 5,
+      dmgNote: "สกิล Sudden Attack / Vital Attack / Vital Assault Damage% สูงและ Cooldown สั้นวนได้เรื่อย ๆ ทำให้ DPS จริงต่อเวลาแรงมากในไฟต์ 1-1.",
+      badges: ["หายตัวเข้าหลัง", "สกิลห้ามฟื้นฟูบางส่วน", "Burst สูง", "บางและแพ้ CC/Reflect"],
+      desc: "Assassin เล่นแบบเน้นกดสกิลต่อเนื่องมากกว่าคอมโบปกติ – ถ้าเริ่มก่อนจากหายตัวแล้วล็อกเป้าหมายได้ มักจบไฟต์ภายใน 1 เซ็ตสกิล แต่ไม่มี Heal/ดูดเลือดจริง ๆ เลยแพ้สายถึก+ฮีลที่ลากไฟต์ยาว.",
+      goodVs: "Fire Wizard, Gambler, Archer ที่ประมาท, Apostle, Chef",
+      badVs: "Defender (Reflect+ถึก), Food Fighter, Sword Master, Renegade, Ice Wizard (สโลว์/แช่แข็ง)",
+      keySkills: [
+        "สายสกิลโจมตีเดี่ยว Damage สูงมากหลายสกิล Cooldown ต่ำ ทำให้วน rotation ได้ดี",
+        "มีสกิล Debuff ลดความสามารถในการฟื้นฟูของศัตรู ทำให้เจาะผ่านสายฮีลง่ายขึ้น",
+        "สกิลเคลื่อนไหวเร็ว ทำให้เข้าถึงตัวเป้าหมายไกลได้"
+      ]
+    },
+    {
+      rank: 3,
+      name: "Archer",
+      tier: "S",
+      overall: 9,
+      pvp: 8,
+      party: 8,
+      support: 3,
+      sustain: 3,
+      control: 7,
+      range: 9,
+      dmgNote: "จากไฟล์สกิล Arrow Squall, Triple Arrow, Magic Arrow มี Damage% สูงและ Range ~8–10 ม. Cooldown ปานกลาง ทำให้ Kite ได้สบาย.",
+      badges: ["ระยะไกลจัด", "Kite เก่ง", "สกิลยิงชุดแรง", "แพ้โดน Gap-close"],
+      desc: "Archer เล่นง่าย อ่านระยะเป็นหลัก – ยิงเปิดจากระยะไกล กด CC/Slow แล้วถอย ทำให้ melee ส่วนใหญ่แทบเข้าไม่ถึงตัว ถ้าโดน Assassin หรือ Sword Master เข้าถึงตัวได้ก่อนจะยากมาก.",
+      goodVs: "Berserker, Renegade, Defender ที่ไม่มี Gap-close, Gambler, Food Fighter",
+      badVs: "Assassin, Sword Master, Gunner (ยิงสู้ระยะไกลและมี burst), Ice Wizard (โซนสโลว์)",
+      keySkills: [
+        "Magic Arrow / Piercing Shot Damage% สูงมากเมื่ออัปเต็ม ใช้เปิดหรือปิดไฟต์",
+        "สกิลเพิ่ม ACC / Range ทำให้ยิงโดนตัวหลบหลีกสูงได้ดี",
+        "สกิลกับดัก/สโลว์บางส่วนช่วยคุมพื้นที่ใน PVP"
+      ]
+    },
+    {
+      rank: 4,
+      name: "Gambler",
+      tier: "A",
+      overall: 8,
+      pvp: 8,
+      party: 7,
+      support: 3,
+      sustain: 3,
+      control: 8,
+      range: 7,
+      dmgNote: "Flush, All In, Movement Stop, Threatening Throw มี Damage% สูง (ถึง ~5,000%) ต่อ Hit และมีโอกาสรีเซ็ต CD/เพิ่มเวทย์อีก ทำให้เพดานดาเมจสูงมากถ้าดวงดี.",
+      badges: ["RNG พลิกไฟต์", "สตั้นวงกว้าง", "Burst ระยะกลาง–ไกล", "ไม่เสถียร"],
+      desc: "ถ้า Movement Stop + Flush/All In ติดครบ เป้าหมายจะละลายในไม่กี่วิ แต่ถ้าดวงแห้ง Damage และ CC จะหลุด ทำให้แพ้ไฟต์ยาว ๆ ได้ง่าย.",
+      goodVs: "Berserker, Fire Wizard, Demolitionist, Artisan, Apostle",
+      badVs: "Defender, Sword Master, Assassin, Food Fighter (สะท้อนบางจังหวะ)",
+      keySkills: [
+        "Movement Stop – สตั้นหมู่ 1–2 วินาที Damage% สูง Range 0 (ต้องเข้าใกล้) แต่พลิกไฟต์ได้",
+        "Flush / All In – สกิล Damage สูงมากแต่ผันผวน",
+        "บัฟ/ดีบัฟที่เพิ่ม/ลด Magic ทำให้ Burst เพิ่มขึ้นอีก"
+      ]
+    },
+    {
+      rank: 5,
+      name: "Gunner",
+      tier: "A",
+      overall: 8,
+      pvp: 8,
+      party: 7,
+      support: 2,
+      sustain: 3,
+      control: 6,
+      range: 8,
+      dmgNote: "Encounter Shot, Precision Shot, Headshot มี Damage% ~4,500–5,700% และ Range ~7–9 ม. ทำ Burst ได้แรง 1 ชุดแล้วถอย.",
+      badges: ["Burst ระยะไกล", "เปิดไฟต์ก่อน", "CD ยาวกว่าพวก spam skill", "บาง"],
+      desc: "เล่นแนว Sniper – เล็งจังหวะ Encounter Shot > Precision Shot > ปิดด้วย Headshot ถ้าไม่ล้มคู่ต่อสู้ต้องรอ CD นานกว่าสาย spam สกิลอย่าง Assassin.",
+      goodVs: "Fire Wizard, Ice Wizard, Gambler, Apostle, Chef",
+      badVs: "Assassin, Sword Master, Defender ที่เข้าถึงตัวทัน, Archer (ระยะไกลกว่าเล็กน้อย + kite)",
+      keySkills: [
+        "สกิลยิงเดี่ยวระยะไกลหลายสกิล Damage สูง",
+        "บางสกิลมีโอกาส Critical เพิ่ม หรือเจาะ DEF ดี",
+        "บัฟเพิ่ม Accuracy ทำให้ยิงโดนตัวหลบสูง"
+      ]
+    },
+    {
+      rank: 6,
+      name: "Fire Wizard",
+      tier: "A",
+      overall: 8,
+      pvp: 7,
+      party: 8,
+      support: 3,
+      sustain: 3,
+      control: 6,
+      range: 8,
+      dmgNote: "Giga Flame / Inferno / Earthquake / Dancing Flame Damage% ~5,000–6,000% AoE กว้าง Range ~10–11 ม. DPS กับหมู่สูงมาก.",
+      badges: ["Burn วงกว้าง", "จุดยืนสร้างดาเมจ", "เปราะ", "แพ้ตัวพุ่งไวๆ"],
+      desc: "ถ้ายืน Free Cast ได้ Fire Wizard เป็นเครื่องยิงดาเมจหมู่ที่แรงมาก แต่ใน 1-1 ถ้าถูก Assassin หรือ Sword Master เข้าถึงตัวจะตายไวมาก.",
+      goodVs: "Berserker, Defender ที่ยืนรับ, Food Fighter, Demolitionist, Artisan",
+      badVs: "Assassin, Sword Master, Archer/Gunner, Gambler (Movement Stop)",
+      keySkills: [
+        "Earthquake / Dancing Flame – สร้างเขต AoE ที่ดาเมจต่อเนื่อง",
+        "บัฟพลังโจมตีเวทย์ตนเอง ช่วยให้สกิลหลักแรงขึ้นมาก",
+        "สกิลบางส่วนมี Cast Time ติดลบ (ในไฟล์) หมายถึงทำให้ร่ายเร็วขึ้น"
+      ]
+    },
+    {
+      rank: 7,
+      name: "Defender",
+      tier: "A",
+      overall: 8,
+      pvp: 7,
+      party: 9,
+      support: 8,
+      sustain: 9,  // reflect + ถึก
+      control: 7,
+      range: 4,
+      dmgNote: "Tornado / Shockwave / สาย reflect ต่าง ๆ Damage% ไม่สูงเท่า DPS แท้ แต่รวมกับ Reflect + Debuff ลด DEF ทำให้ยืนแลกแล้วอีกฝั่งเจ็บเอง.",
+      badges: ["แทงค์สะท้อน", "CC หมู่", "ยืนยาว", "ดาเมจ burst ไม่สุด"],
+      desc: "ใน 1-1 ถ้าอีกฝั่งเน้นสาดสกิลใส่ Defender ตรง ๆ จะเจ็บเพราะสะท้อนและ Debuff ป้องกัน แต่แพ้สาย Kite ไกลที่ไม่ยอมเข้า Range.",
+      goodVs: "Assassin, Sword Master ที่เข้าแลกตรง ๆ, Berserker, Gambler, Fire Wizard",
+      badVs: "Archer, Gunner, Ice Wizard (kite + slow), Demolitionist (วางระเบิดนอกระยะ)",
+      keySkills: [
+        "สกิล Reflect หลายอัน – คืนดาเมจเมื่อโดนตี",
+        "Tornado / Shockwave – CC และลด DEF หมู่",
+        "บัฟป้องกัน/HP ให้ตนเองและปาร์ตี้ในบางสกิล"
+      ]
+    },
+    {
+      rank: 8,
+      name: "Renegade",
+      tier: "B",
+      overall: 7,
+      pvp: 6,
+      party: 7,
+      support: 5,
+      sustain: 6,
+      control: 6,
+      range: 5,
+      dmgNote: "Break Weapon / Break Armour จากไฟล์มี Damage% ~6,500% พร้อม Debuff ลด ATK/DEF หนักมาก ทำให้ดาเมจรวมของทีมแรงขึ้น.",
+      badges: ["Debuff หนัก", "ดาเมจกลางๆ", "เก่งไฟต์ยื้อ", "แพ้ burst จัด"],
+      desc: "ตัวเลขดาเมจอาจไม่สูงสุด แต่การลด ATK/DEF ทำให้ทั้งทีมเราได้เปรียบ ยิ่งไฟต์ยื้อยาว Renegade ยิ่งคุ้มค่า.",
+      goodVs: "Berserker, Sword Master, Defender, Food Fighter",
+      badVs: "Assassin, Archer, Gunner, Fire Wizard",
+      keySkills: [
+        "Break Weapon / Break Armour – ลด ATK/DEF เป้าหมายอย่างแรง",
+        "สาย Dark เพิ่มดาเมจต่อเนื่อง",
+        "มีบัฟป้องกันตัวเองเล็กน้อยเพิ่ม sustain"
+      ]
+    },
+    {
+      rank: 9,
+      name: "Ice Wizard",
+      tier: "B",
+      overall: 7,
+      pvp: 6,
+      party: 9,
+      support: 5,
+      sustain: 3,
+      control: 10,
+      range: 8,
+      dmgNote: "Ice Spear / Blizzard / Ice Storm Damage% ~4,500–5,000% แต่เด่นมากที่ Slow/Freeze หมู่ ยืนแช่คนทั้งหน้าจอได้หลายวินาที.",
+      badges: ["คุมฝูงด้วยสโลว์/แช่แข็ง", "เก่ง Mass PVP", "ดาเมจเดี่ยวไม่สุด", "เปราะ"],
+      desc: "1-1 ถ้าคุมระยะดีจะเล่นสไตล์ Kite ช้า ๆ ทำให้ melee เข้าไม่ถึง แต่ถ้าพลาดโดน gap-close ก็หมดทันที.",
+      goodVs: "Berserker, Defender, Food Fighter, Gambler, Demolitionist",
+      badVs: "Assassin, Sword Master, Archer/Gunner ที่อ่านจังหวะดี",
+      keySkills: [
+        "Blizzard – AoE แช่แข็งหมู่, สุดยอด CC team fight",
+        "Ice Spear – single-target slow แรง",
+        "บัฟ/ดีบัฟลดความเร็วเดินคู่ต่อสู้"
+      ]
+    },
+    {
+      rank: 10,
+      name: "Berserker",
+      tier: "B",
+      overall: 7,
+      pvp: 6,
+      party: 6,
+      support: 2,   // แก้จากเวอร์ชันก่อน – ซัพพอร์ตตัวเองเป็นหลัก
+      sustain: 8,   // ดูดเลือดแรงจากสกิล / passive
+      control: 6,
+      range: 4,
+      dmgNote: "ดาเมจทฤษฎีรวมจากคอมโบและสกิลคลาส 2 อยู่ระดับ ~13,000–16,000% แต่ต้องยืนคอมโบนาน จึงโดน CC ขัดบ่อย.",
+      badges: ["ดาเมจทฤษฎีสูงมาก", "ดูดเลือดตนเอง", "แพ้ CC & Kite", "ยืนแท็งค์กึ่งบูสต์"],
+      desc: "เล่นจริงต้องสลับคอมโบปกติ + สกิล รวมถึงดูดเลือดจากสกิลเพื่อยืนไฟต์ ถ้าเข้าไม่ถึงตัวหรือโดนหยุดบ่อย ดาเมจจะไม่ถึงเพดาน.",
+      goodVs: "Gambler, Fire Wizard, Demolitionist, Artisan, Apostle",
+      badVs: "Assassin, Sword Master, Archer, Gunner, Defender",
+      keySkills: [
+        "สกิลดูดเลือด – คืน HP ตามดาเมจที่ทำได้",
+        "สกิลลด DEF คู่ต่อสู้ (Dominate สาย Warrior → Berserker)",
+        "บัฟเพิ่มพลังโจมตีกายภาพให้ตนเองในช่วงบ้าคลั่ง"
+      ]
+    },
+    {
+      rank: 11,
+      name: "Templar",
+      tier: "B",
+      overall: 7,
+      pvp: 7,
+      party: 9,
+      support: 7,
+      sustain: 6,
+      control: 7,
+      range: 5,
+      dmgNote: "Repentance / Judgement / Sanctuary Damage% ~4,000–5,000% รวมกับ Debuff ลด DEF และสกิลบัฟ/ฮีลสาย Priest ทำให้เป็น DPS–Support ที่กลมกล่อม.",
+      badges: ["DPS + Support", "ลดเกราะแรง", "มีฮีล–บัฟจากคลาส Priest", "ไม่สุดทางดาเมจ"],
+      desc: "ในปาร์ตี้เป็นตัวสำคัญช่วยลดเกราะและเติมดาเมจ เวลายืน 1-1 จะไม่สุดเท่า Assassin/SwordMaster แต่ก็ไม่แพ้ง่ายเพราะมี Heal/บัฟเสริม.",
+      goodVs: "Renegade, Gambler, Fire Wizard, Apostle mirror",
+      badVs: "Assassin, Sword Master, Defender, Archer/Gunner",
+      keySkills: [
+        "Sanctuary – AoE ลด DEF และเพิ่มดาเมจต่อธาตุมืด",
+        "Repentance / Judgement – single-target burst ดี",
+        "ฮีล/บัฟจากคลาส Priest เดิม เช่น เพิ่ม DEF, Resist, Anti-debuff"
+      ]
+    },
+    {
+      rank: 12,
+      name: "Chef",
+      tier: "B",
+      overall: 7,
+      pvp: 6,
+      party: 9,
+      support: 9,
+      sustain: 8,
+      control: 4,
+      range: 4,
+      dmgNote: "Damage จากสกิลตีไม่สูงมาก แต่มี Heal แรงมากให้ทั้งตัวเองและปาร์ตี้ + บัฟอาหารหลายชนิด (ATK/DEF/ACC/EVR/Move/Attack Speed).",
+      badges: ["Heal แรง", "บัฟอาหารจัดเต็ม", "ดาเมจกลางๆ", "เล่น 1-1 ต้องลากไฟต์"],
+      desc: "ในไฟต์ 1-1 ถ้าคู่ต่อสู้ไม่มี cut heal จะล้ม Chef ยาก เพราะ Heal เองได้แรง แต่ใช้เวลานานในการปิดไฟต์ ในปาร์ตี้ถือว่ามีค่ามากใกล้เคียง Apostle.",
+      goodVs: "Berserker, Fire Wizard ที่ burst ไม่พอ, Gambler ดวงแห้ง",
+      badVs: "Assassin, Sword Master, Gambler ดวงดี, Defender (สะท้อนบางจังหวะ)",
+      keySkills: [
+        "สกิล Heal เดี่ยว/หมู่ ที่ scale ตาม Magic และ MaxHP",
+        "บัฟอาหารเพิ่ม ATK, DEF, Accuracy, Evasion, Move/Attack Speed ให้ทีม",
+        "สกิลเสริมป้องกันเล็กน้อย ทำให้ทีมตายยากขึ้น"
+      ]
+    },
+    {
+      rank: 13,
+      name: "Food Fighter",
+      tier: "C",
+      overall: 6,
+      pvp: 6,
+      party: 7,
+      support: 6,
+      sustain: 9,
+      control: 5,
+      range: 3,
+      dmgNote: "ดาเมจตรงระดับกลาง แต่มี Reflect/บังคับเป้าหมายโจมตีตัวเอง ทำให้คู่ต่อสู้ที่สาดสกิลรัว ๆ เจ็บเองมาก.",
+      badges: ["แทงค์สะท้อน", "ยื้อไฟต์เก่ง", "ดาเมจปิดไม่จัด", "แพ้ Kite, ignore reflect"],
+      desc: "ถ้าอีกฝั่งไม่รู้จังหวะ จะยิงใส่ Food Fighter แล้วเลือดตัวเองลดฮวบ แต่ถ้าถูกอ่านเกมจะถูก ignore หรือรอหมด buff แล้วค่อย burst.",
+      goodVs: "Assassin, Sword Master, Berserker, Gambler",
+      badVs: "Archer, Gunner, Fire/Ice Wizard ที่เล่น kite, Demolitionist",
+      keySkills: [
+        "หลายสกิล Reflect ดาเมจกลับไปยังผู้โจมตี",
+        "บัฟถึก เพิ่ม DEF/HP ตนเองและบางส่วนให้ทีม",
+        "สกิลยั่วให้ mob/ผู้เล่นโจมตีตนเอง"
+      ]
+    },
+    {
+      rank: 14,
+      name: "Apostle",
+      tier: "C",
+      overall: 7,
+      pvp: 5,
+      party: 10,
+      support: 10,
+      sustain: 8,
+      control: 5,
+      range: 6,
+      dmgNote: "จากไฟล์ Holy Force, Holy Magic, Gospel, Tower of Light, Heal ต่าง ๆ – ให้บัฟ ATK/MPW/ACC/EVR/Crit/Move/Attack Speed + Heal หมู่แรงมาก.",
+      badges: ["หัวใจปาร์ตี้", "บัฟแทบทุกสเตตัส", "Heal หมู่แรง", "ดาเมจตรงไม่แรง"],
+      desc: "ใน 1-1 จะไม่สุดเรื่องฆ่าคน แต่แทบเป็น must-pick ใน Party 6v6 เพราะรวมบัฟเกือบทุกอย่างที่ทีมต้องการ ทั้งป้องกันและบุก.",
+      goodVs: "ไฟต์ยื้อ vs DPS กลางๆ (ยื้อจนอีกฝ่ายหมด AP หรือ miss)",
+      badVs: "Assassin, Sword Master, Gambler ที่ burst แรงเกินจะฮีลทัน",
+      keySkills: [
+        "Holy Force / Holy Magic – เพิ่ม ATK/MPW ให้ทั้งปาร์ตี้",
+        "บัฟ ACC/EVR/Crit/Move/ASPD จากสาย Priest/Apostle อื่น ๆ",
+        "Heal หมู่แรง + สกิลกันตาย/ลดดาเมจให้แนวหน้า"
+      ]
+    },
+    {
+      rank: 15,
+      name: "Demolitionist",
+      tier: "C",
+      overall: 6,
+      pvp: 5,
+      party: 7,
+      support: 5,
+      sustain: 4,
+      control: 6,
+      range: 7,
+      dmgNote: "Coup de Grace และสกิลระเบิด/กับดักมี Damage% กลาง–สูง แต่ต้องให้ศัตรูเดินเหยียบหรือยืนในระยะ ทำให้ 1-1 ในพื้นที่โล่งเล่นยาก.",
+      badges: ["วางกับดัก", "ดีใน choke point", "ไฟต์เปิดโล่งลำบาก", "บาง"],
+      desc: "เหมาะกับสนามแคบหรือ choke point ถ้าศัตรูโดนดักเข้าเต็มชุดจะเจ็บมาก แต่ถ้าพื้นที่กว้างและคู่ต่อสู้รู้ว่าควรหลบตรงไหนจะโดนอ่านง่าย.",
+      goodVs: "Defender/FF ที่ต้องเดินเข้า, Berserker, Sword Master ที่ไล่ตามไม่ดูพื้น",
+      badVs: "Archer, Gunner, Assassin, Gambler",
+      keySkills: [
+        "กับดักระเบิดหลายชนิดที่วางล่วงหน้าได้",
+        "ดีบัฟลด DEF/Move จากบางสกิล",
+        "สกิลโยนระเบิดระยะกลาง Damage กลาง–สูง"
+      ]
+    },
+    {
+      rank: 16,
+      name: "Artisan",
+      tier: "C",
+      overall: 4,
+      pvp: 3,
+      party: 5,
+      support: 4,
+      sustain: 3,
+      control: 3,
+      range: 3,
+      dmgNote: "จากไฟล์ สกิลต่อสู้ Damage% ไม่สูงนัก จุดเด่นจริง ๆ คือสกิลผลิตของ/ตีบวก ซึ่งไม่ได้ช่วย PVP โดยตรง.",
+      badges: ["สายทำของ", "PVP เล่นเอาฮา", "ไม่มี Burst จริงจัง"],
+      desc: "หากเทียบกันที่เลเวล 251 ของเท่ากัน Artisan จะเป็นสายรองสุดด้านการต่อสู้ แต่เป็น MVP เรื่องเศรษฐกิจและค่าตีบวกในโลกจริง.",
+      goodVs: "ผู้เล่นที่ของห่างเยอะ (นอกสมมติฐาน A-set เดียวกัน)",
+      badVs: "แทบทุกสาย PVP จริงจัง",
+      keySkills: [
+        "สกิลเพิ่มโอกาสตีบวก/คราฟต์ของคุณภาพดี",
+        "บัฟเล็กน้อยด้าน DEF/Utility",
+        "ไม่มีสกิล Burst/CC แรง ๆ เทียบอาชีพอื่น"
+      ]
+    }
+  ];
+
+  const partyTeams = [
+    {
+      name: "Meta Balanced 6v6",
+      label: "Damage + CC + Heal ครบ",
+      lineup: ["Sword Master", "Assassin", "Archer", "Ice Wizard", "Defender", "Apostle"],
+      text: "ทีมหลักเล่นตามเมต้ายืนไฟต์: Sword Master + Assassin เป็นตัวล้วง, Archer + Ice Wizard คุมระยะและสโลว์หมู่, Defender ยืนหน้า reflect/damage soak, Apostle ดูแลบัฟทุกสเตตัสและฮีลหมู่."
+    },
+    {
+      name: "Burst Rush Team",
+      label: "All-in เปิดก่อนให้ตายภายใน 5–10 วิ",
+      lineup: ["Sword Master", "Assassin", "Gambler", "Gunner", "Fire Wizard", "Chef"],
+      text: "สายเปิดก่อนตายก่อน เน้นให้ Assassin + Sword Master + Gambler พุ่งเข้าล้วงพร้อม Fire Wizard/Gunner ยิงซ้ำ Chef คอยฮีล/บัฟเพิ่ม ATK/ACC ให้ทุกคน ถ้าเปิดไม่ล้ม ต้องถอยยกวงเพราะไม่มีแทงค์แท้ ๆ."
+    },
+    {
+      name: "Kite & Control",
+      label: "ชนะด้วยระยะและ CC",
+      lineup: ["Archer", "Gunner", "Ice Wizard", "Fire Wizard", "Renegade", "Apostle"],
+      text: "ทุกคนเน้นคุมระยะให้เมลีย์เข้าไม่ถึง: Ice Wizard สโลว์/แช่แข็ง, Archer/Gunner ยิงค้ำ, Fire Wizard สร้างไฟ AoE, Renegade ลด ATK/DEF ศัตรู, Apostle คอยบัฟและเซ็ตฮีลยื้อ."
+    },
+    {
+      name: "Reflect Fortress",
+      label: "ให้เขาตีเราแล้วเจ็บเอง",
+      lineup: ["Defender", "Food Fighter", "Berserker", "Templar", "Ice Wizard", "Apostle"],
+      text: "Defender + Food Fighter เป็นกำแพงสะท้อน ให้ศัตรูต้องตัดสินใจว่าจะเข้าแลกไหม Berserker เป็น DPS ระยะใกล้ ใช้ Lifesteal ยืนไฟต์ยาว, Templar ลดเกราะ/ฮีลเสริม, Ice Wizard คุมจังหวะ, Apostle บัฟ/ฮีลรวม."
+    },
+    {
+      name: "Fun RNG & Trap",
+      label: "ดวงดีคือเทพ ดวงแห้งคือโบกมือ",
+      lineup: ["Gambler", "Demolitionist", "Archer", "Assassin", "Chef", "Defender"],
+      text: "Gambler + Demolitionist เป็นตัวปั่น RNG และกับดัก, Archer/Assassin เติม Burst และปิดจังหวะ, Chef ฮีล/บัฟ, Defender รับดาเมจหน้าและสะท้อนให้ทีมมีเวลาตั้งกับดัก/เสี่ยงโชค."
+    }
+  ];
+
+  function createMetricRow(label, value, extraClass = "") {
+    const row = document.createElement("div");
+    row.className = "metric-row";
+
+    const labelEl = document.createElement("div");
+    labelEl.className = "metric-label";
+    labelEl.textContent = label;
+
+    const bar = document.createElement("div");
+    bar.className = "metric-bar";
+
+    const fill = document.createElement("div");
+    fill.className = "metric-fill" + (extraClass ? " " + extraClass : "");
+    fill.style.setProperty("--value", value);
+
+    const scale = document.createElement("div");
+    scale.className = "metric-scale";
+    for (let i = 1; i <= 10; i++) {
+      const span = document.createElement("span");
+      span.textContent = i;
+      scale.appendChild(span);
+    }
+
+    const val = document.createElement("div");
+    val.className = "metric-value";
+    val.textContent = value;
+
+    bar.appendChild(fill);
+    bar.appendChild(scale);
+    bar.appendChild(val);
+
+    row.appendChild(labelEl);
+    row.appendChild(bar);
+    return row;
+  }
+
+  function renderJobs() {
+    const grid = document.getElementById("pvp-section");
+    grid.innerHTML = "";
+
+    jobsData
+      .slice()
+      .sort((a, b) => a.rank - b.rank)
+      .forEach(job => {
+        const article = document.createElement("article");
+        article.className = "card";
+
+        const header = document.createElement("div");
+        header.className = "card-header";
+
+        const rankSpan = document.createElement("span");
+        rankSpan.className = "rank-pill";
+        rankSpan.textContent = "อันดับ " + job.rank;
+
+        const headRight = document.createElement("div");
+        headRight.className = "job-head";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "job-name";
+        nameDiv.textContent = job.name;
+
+        const tierSpan = document.createElement("span");
+        tierSpan.className = "tier-tag tier-" + job.tier.toLowerCase();
+        tierSpan.textContent = job.tier + " Tier";
+
+        headRight.appendChild(nameDiv);
+        headRight.appendChild(tierSpan);
+
+        header.appendChild(rankSpan);
+        header.appendChild(headRight);
+
+        const metrics = document.createElement("div");
+        metrics.className = "metrics";
+        metrics.appendChild(createMetricRow("ความเก่งโดยรวม", job.overall));
+        metrics.appendChild(createMetricRow("PVP 1-1", job.pvp));
+        metrics.appendChild(createMetricRow("Party / Boss", job.party));
+        metrics.appendChild(createMetricRow("ซัพพอร์ตทีม (บัฟ/ดีบัฟ)", job.support));
+        metrics.appendChild(createMetricRow("ยืนไฟต์ / ฟื้นฟูตัวเอง", job.sustain));
+        metrics.appendChild(createMetricRow("คุมจังหวะ / CC", job.control, "cc"));
+        metrics.appendChild(createMetricRow("ระยะ / Mobility", job.range));
+
+        const dmgNote = document.createElement("div");
+        dmgNote.className = "dmg-note";
+        dmgNote.textContent = job.dmgNote;
+
+        const badges = document.createElement("div");
+        badges.className = "badge-row";
+        job.badges.forEach(b => {
+          const span = document.createElement("span");
+          span.className = "badge";
+          span.textContent = b;
+          badges.appendChild(span);
+        });
+
+        const desc = document.createElement("p");
+        desc.className = "desc";
+        desc.textContent = job.desc;
+
+        const matchup = document.createElement("div");
+        matchup.className = "matchup";
+
+        const goodDiv = document.createElement("div");
+        goodDiv.className = "matchup-block";
+        const goodTitle = document.createElement("div");
+        goodTitle.className = "matchup-title good";
+        goodTitle.textContent = "คู่ต่อสู้ที่ได้เปรียบ";
+        const goodList = document.createElement("div");
+        goodList.className = "matchup-list";
+        goodList.textContent = job.goodVs;
+        goodDiv.appendChild(goodTitle);
+        goodDiv.appendChild(goodList);
+
+        const badDiv = document.createElement("div");
+        badDiv.className = "matchup-block";
+        const badTitle = document.createElement("div");
+        badTitle.className = "matchup-title bad";
+        badTitle.textContent = "คู่ต่อสู้ที่เสียเปรียบ";
+        const badList = document.createElement("div");
+        badList.className = "matchup-list";
+        badList.textContent = job.badVs;
+        badDiv.appendChild(badTitle);
+        badDiv.appendChild(badList);
+
+        matchup.appendChild(goodDiv);
+        matchup.appendChild(badDiv);
+
+        const skillTitle = document.createElement("div");
+        skillTitle.className = "skill-title";
+        skillTitle.textContent = "ภาพรวมสกิลเด่น (อิง Max Lv. จาก wiki)";
+
+        const ul = document.createElement("ul");
+        ul.className = "skill-list";
+        job.keySkills.forEach(s => {
+          const li = document.createElement("li");
+          li.textContent = s;
+          ul.appendChild(li);
+        });
+
+        article.appendChild(header);
+        article.appendChild(metrics);
+        article.appendChild(dmgNote);
+        article.appendChild(badges);
+        article.appendChild(desc);
+        article.appendChild(matchup);
+        article.appendChild(skillTitle);
+        article.appendChild(ul);
+
+        grid.appendChild(article);
+      });
+  }
+
+  function renderParties() {
+    const grid = document.getElementById("party-grid");
+    grid.innerHTML = "";
+    partyTeams.forEach(team => {
+      const card = document.createElement("div");
+      card.className = "party-card";
+
+      const title = document.createElement("div");
+      title.className = "party-title";
+      title.textContent = team.name;
+
+      const label = document.createElement("div");
+      label.className = "party-label";
+      label.textContent = team.label;
+
+      const lineup = document.createElement("div");
+      lineup.className = "party-lineup";
+      team.lineup.forEach(job => {
+        const span = document.createElement("span");
+        span.textContent = job;
+        lineup.appendChild(span);
+      });
+
+      const text = document.createElement("div");
+      text.className = "party-text";
+      text.textContent = team.text;
+
+      card.appendChild(title);
+      card.appendChild(label);
+      card.appendChild(lineup);
+      card.appendChild(text);
+
+      grid.appendChild(card);
+    });
+  }
+
+  // Tab logic
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const tab = btn.dataset.tab;
+      document.getElementById("pvp-section").style.display = tab === "pvp" ? "grid" : "none";
+      document.getElementById("party-section").style.display = tab === "party" ? "block" : "none";
+    });
+  });
+
+  renderJobs();
+  renderParties();
+</script>
+</body>
+</html>
